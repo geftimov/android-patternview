@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PatternView">
+
+        <!-- This is the maximum size the view will take in wrap_content mode -->
+        <attr name="maxSize" format="dimension" />
+        <attr name="defaultCircleColor" format="reference" />
+
+        <!-- Number of rows and columns in the matrix -->
+        <attr name="gridSize" format="integer" />
+    </declare-styleable>
+
+</resources>

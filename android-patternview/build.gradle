@@ -1,0 +1,75 @@
+apply plugin: 'com.android.library'
+apply plugin: 'android-library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version = "1.0.0"
+group = "com.eftimoff"
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+configurations {
+    archives {
+        extendsFrom configurations.default
+    }
+}
+
+signing {
+    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: sonatypeRepo) {
+            authentication(userName: sonatypeUsername,
+                    password: sonatypePassword)
+        }
+
+        pom.project {
+            name 'Pattern view for android.'
+            packaging 'aar'
+            description 'Pattern view for android.That one using lock or unlock.'
+            url 'https://github.com/geftimov/android-patternview'
+
+            scm {
+                url 'scm:git@github.com:geftimov/android-patternview.git'
+                connection 'scm:git@github.com:geftimov/android-patternview.git'
+                developerConnection 'scm:git@github.com:geftimov/android-patternview.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'geftimov'
+                    name 'Georgi Eftimov'
+                    email 'jokatavr@gmail.com'
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+
+}

@@ -29,16 +29,31 @@ import java.util.List;
 
 public class PatternView extends View {
 
-    private int mMatrixWidth = 3;
+    /**
+     * The width and height of the matrix.
+     */
+    private int gridSize;
+    /**
+     * The size of cells in the matrix.
+     */
     private int matrixSize;
-
+    /**
+     * The maximum size when it is used wrap content.
+     */
+    private int maxSize = 0;
+    /**
+     * Manager for the cells.
+     */
     private CellManager cellManager;
+    /**
+     * The paint the will draw the path.
+     */
+    private final Paint mPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private static final boolean PROFILE_DRAWING = false;
     private boolean mDrawingProfilingStarted = false;
-
-    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint mPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     // TODO: make this common with PhoneWindow
     // static final int STATUS_BAR_HEIGHT = 25;
@@ -52,12 +67,6 @@ public class PatternView extends View {
 
     private OnPatternListener mOnPatternListener;
     private ArrayList<Cell> mPattern;
-
-    void init() {
-        cellManager = new CellManager(mMatrixWidth, mMatrixWidth);
-        matrixSize = cellManager.getSize();
-        mPattern = new ArrayList<>(matrixSize);
-    }
 
 
     /**
@@ -105,7 +114,39 @@ public class PatternView extends View {
     private final int mPaddingLeft = mPadding;
     private final int mPaddingTop = mPadding;
 
-    private int mMaxSize = 0;
+
+    public PatternView(Context context) {
+        this(context, null);
+    }
+
+    public PatternView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public PatternView(Context context, AttributeSet attrs, final int defStyle) {
+        super(context, attrs, defStyle);
+        getFromAttributes(context, attrs);
+        init();
+
+        mPathPaint.setDither(true);
+        mPathPaint.setStyle(Paint.Style.STROKE);
+        mPathPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPathPaint.setStrokeCap(Paint.Cap.ROUND);
+        loadBitmaps();
+    }
+
+    private void getFromAttributes(Context context, AttributeSet attrs) {
+        final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PatternView);
+        try {
+            maxSize = typedArray.getDimensionPixelSize(R.styleable.PatternView_maxSize, 0);
+            //TODO Why this does not work.
+            mBitmapCircleSelectedResourceId = typedArray.getResourceId(R.styleable.PatternView_defaultCircleColor, R.drawable.pattern_circle_white);
+            mPathPaint.setColor(typedArray.getColor(R.styleable.PatternView_pathColor, Color.WHITE));
+            gridSize = typedArray.getInt(R.styleable.PatternView_gridSize, 3);
+        } finally {
+            typedArray.recycle();
+        }
+    }
 
     /**
      * @return The distance in inches that the finger has swiped over the
@@ -123,89 +164,10 @@ public class PatternView extends View {
     }
 
 
-    /**
-     * How to display the current pattern.
-     */
-    public enum DisplayMode {
-
-        /**
-         * The pattern drawn is correct (i.e draw it in a friendly color)
-         */
-        Correct,
-
-        /**
-         * Animate the pattern (for demo, and help).
-         */
-        Animate,
-
-        /**
-         * The pattern is wrong (i.e draw a foreboding color)
-         */
-        Wrong
-    }
-
-    /**
-     * The call back interface for detecting patterns entered by the user.
-     */
-    public static interface OnPatternListener {
-
-        /**
-         * A new pattern has begun.
-         */
-        void onPatternStart();
-
-        /**
-         * The pattern was cleared.
-         */
-        void onPatternCleared();
-
-        /**
-         * The user extended the pattern currently being drawn by one cell.
-         */
-        void onPatternCellAdded();
-
-        /**
-         * A pattern was detected from the user.
-         */
-        void onPatternDetected();
-    }
-
-    public PatternView(Context context) {
-        this(context, null);
-    }
-
-    public void setSize(int newSize) {
-        mMatrixWidth = newSize;
-        init();
-    }
-
-    public PatternView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-
-        setClickable(true);
-
-        TypedArray a = context.obtainStyledAttributes(attrs,
-                R.styleable.PatternView);
-        try {
-
-            mMaxSize = a.getDimensionPixelSize(R.styleable.PatternView_maxSize,
-                    0);
-            mBitmapCircleSelectedResourceId = a.getResourceId(
-                    R.styleable.PatternView_defaultCircleColor,
-                    R.drawable.pattern_circle_white);
-        } finally {
-            a.recycle();
-        }
-
-        mPathPaint.setAntiAlias(true);
-        mPathPaint.setDither(true);
-        mPathPaint.setColor(Color.WHITE); // TODO
-        int mStrokeAlpha = 128;
-        mPathPaint.setAlpha(mStrokeAlpha);
-        mPathPaint.setStyle(Paint.Style.STROKE);
-        mPathPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPathPaint.setStrokeCap(Paint.Cap.ROUND);
-        loadBitmaps();
+    private void init() {
+        cellManager = new CellManager(gridSize, gridSize);
+        matrixSize = cellManager.getSize();
+        mPattern = new ArrayList<>(matrixSize);
     }
 
     /**
@@ -438,8 +400,8 @@ public class PatternView extends View {
      * Clear the pattern lookup table.
      */
     private void clearPatternDrawLookup() {
-        for (int i = 0; i < mMatrixWidth; i++) {
-            for (int j = 0; j < mMatrixWidth; j++) {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
                 cellManager.clearDrawing();
             }
         }
@@ -464,11 +426,11 @@ public class PatternView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         int mPaddingRight = mPadding;
         final int width = w - mPaddingLeft - mPaddingRight;
-        mSquareWidth = width / (float) mMatrixWidth;
+        mSquareWidth = width / (float) gridSize;
 
         int mPaddingBottom = mPadding;
         final int height = h - mPaddingTop - mPaddingBottom;
-        mSquareHeight = height / (float) mMatrixWidth;
+        mSquareHeight = height / (float) gridSize;
     }
 
     @Override
@@ -476,7 +438,7 @@ public class PatternView extends View {
         // View should be large enough to contain MATRIX_WIDTH side-by-side
         // target
         // bitmaps
-        return mMatrixWidth * mBitmapWidth;
+        return gridSize * mBitmapWidth;
     }
 
     @Override
@@ -484,7 +446,7 @@ public class PatternView extends View {
         // View should be large enough to contain MATRIX_WIDTH side-by-side
         // target
         // bitmaps
-        return mMatrixWidth * mBitmapWidth;
+        return gridSize * mBitmapWidth;
     }
 
     @Override
@@ -492,8 +454,8 @@ public class PatternView extends View {
         int height = MeasureSpec.getSize(heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int size = Math.min(width, height);
-        if (mMaxSize != 0) {
-            size = Math.min(size, mMaxSize);
+        if (maxSize != 0) {
+            size = Math.min(size, maxSize);
         }
         setMeasuredDimension(size, size);
     }
@@ -591,7 +553,7 @@ public class PatternView extends View {
         float hitSize = squareHeight * mHitFactor;
 
         float offset = mPaddingTop + (squareHeight - hitSize) / 2f;
-        for (int i = 0; i < mMatrixWidth; i++) {
+        for (int i = 0; i < gridSize; i++) {
 
             final float hitTop = offset + squareHeight * i;
             if (y >= hitTop && y <= hitTop + hitSize) {
@@ -612,7 +574,7 @@ public class PatternView extends View {
         float hitSize = squareWidth * mHitFactor;
 
         float offset = mPaddingLeft + (squareWidth - hitSize) / 2f;
-        for (int i = 0; i < mMatrixWidth; i++) {
+        for (int i = 0; i < gridSize; i++) {
 
             final float hitLeft = offset + squareWidth * i;
             if (x >= hitLeft && x <= hitLeft + hitSize) {
@@ -923,11 +885,11 @@ public class PatternView extends View {
         final int paddingTop = mPaddingTop;
         final int paddingLeft = mPaddingLeft;
 
-        for (int i = 0; i < mMatrixWidth; i++) {
+        for (int i = 0; i < gridSize; i++) {
             float topY = paddingTop + i * squareHeight;
             // float centerY = mPaddingTop + i * mSquareHeight + (mSquareHeight
             // / 2);
-            for (int j = 0; j < mMatrixWidth; j++) {
+            for (int j = 0; j < gridSize; j++) {
                 float leftX = paddingLeft + j * squareWidth;
 //                drawCircle(canvas, (int) leftX, (int) topY, drawLookup[i][j]);
                 drawCircle(canvas, (int) leftX, (int) topY, cellManager.isDrawn(i, j));
@@ -1238,6 +1200,53 @@ public class PatternView extends View {
 
     public void onShow() {
         clearPattern();
+    }
+
+    /**
+     * How to display the current pattern.
+     */
+    public enum DisplayMode {
+
+        /**
+         * The pattern drawn is correct (i.e draw it in a friendly color)
+         */
+        Correct,
+
+        /**
+         * Animate the pattern (for demo, and help).
+         */
+        Animate,
+
+        /**
+         * The pattern is wrong (i.e draw a foreboding color)
+         */
+        Wrong
+    }
+
+    /**
+     * The call back interface for detecting patterns entered by the user.
+     */
+    public interface OnPatternListener {
+
+        /**
+         * A new pattern has begun.
+         */
+        void onPatternStart();
+
+        /**
+         * The pattern was cleared.
+         */
+        void onPatternCleared();
+
+        /**
+         * The user extended the pattern currently being drawn by one cell.
+         */
+        void onPatternCellAdded();
+
+        /**
+         * A pattern was detected from the user.
+         */
+        void onPatternDetected();
     }
 
 }

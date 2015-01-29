@@ -13,6 +13,5 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         patternView = (PatternView) findViewById(R.id.patternView);
-        patternView.setSize(6);
     }
 }

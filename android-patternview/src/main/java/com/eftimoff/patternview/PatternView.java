@@ -27,13 +27,6 @@ import com.eftimoff.patternview.utils.PatternUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Displays and detects the user's unlock attempt, which is a drag of a finger
- * across 9 regions of the screen.
- * <p/>
- * Is also capable of displaying a static pattern in "in progress", "wrong" or
- * "correct" states.
- */
 public class PatternView extends View {
 
     private int mMatrixWidth = 3;
@@ -44,8 +37,8 @@ public class PatternView extends View {
     private static final boolean PROFILE_DRAWING = false;
     private boolean mDrawingProfilingStarted = false;
 
-    private final Paint mPaint = new Paint();
-    private final Paint mPathPaint = new Paint();
+    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint mPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     // TODO: make this common with PhoneWindow
     // static final int STATUS_BAR_HEIGHT = 25;
@@ -63,17 +56,9 @@ public class PatternView extends View {
     void init() {
         cellManager = new CellManager(mMatrixWidth, mMatrixWidth);
         matrixSize = cellManager.getSize();
-        mPatternDrawLookup = new boolean[mMatrixWidth][mMatrixWidth];
         mPattern = new ArrayList<>(matrixSize);
     }
 
-    /**
-     * Lookup table for the circles of the pattern we are currently drawing.
-     * This will be the cells of the complete pattern unless we are animating,
-     * in which case we use this to hold the cells we are drawing for the in
-     * progress animation.
-     */
-    private boolean[][] mPatternDrawLookup;
 
     /**
      * the in progress point: - during interaction: where the user's finger is -
@@ -325,7 +310,7 @@ public class PatternView extends View {
         mPattern.addAll(pattern);
         clearPatternDrawLookup();
         for (Cell cell : pattern) {
-            mPatternDrawLookup[cell.getRow()][cell.getColumn()] = true;
+            cellManager.draw(cell, true);
         }
 
         setDisplayMode(displayMode);
@@ -455,7 +440,7 @@ public class PatternView extends View {
     private void clearPatternDrawLookup() {
         for (int i = 0; i < mMatrixWidth; i++) {
             for (int j = 0; j < mMatrixWidth; j++) {
-                mPatternDrawLookup[i][j] = false;
+                cellManager.clearDrawing();
             }
         }
     }
@@ -554,8 +539,7 @@ public class PatternView extends View {
 
             }
             for (Cell fillInGapCell : newCells) {
-                if (fillInGapCell != null
-                        && !mPatternDrawLookup[fillInGapCell.getRow()][fillInGapCell.getColumn()]) {
+                if (fillInGapCell != null && !cellManager.isDrawn(fillInGapCell)) {
                     addCellToPattern(fillInGapCell);
                 }
             }
@@ -572,7 +556,7 @@ public class PatternView extends View {
     }
 
     private void addCellToPattern(Cell newCell) {
-        mPatternDrawLookup[newCell.getRow()][newCell.getColumn()] = true;
+        cellManager.draw(newCell, true);
         mPattern.add(newCell);
         notifyCellAdded();
     }
@@ -589,7 +573,7 @@ public class PatternView extends View {
             return null;
         }
 
-        if (mPatternDrawLookup[rowHit][columnHit]) {
+        if (cellManager.isDrawn(rowHit, columnHit)) {
             return null;
         }
         return cellManager.get(rowHit, columnHit);
@@ -882,7 +866,7 @@ public class PatternView extends View {
     protected void onDraw(Canvas canvas) {
         final ArrayList<Cell> pattern = mPattern;
         final int count = pattern.size();
-        final boolean[][] drawLookup = mPatternDrawLookup;
+//        final boolean[][] drawLookup = mPatternDrawLookup;
 
         if (mPatternDisplayMode == DisplayMode.Animate) {
 
@@ -897,7 +881,8 @@ public class PatternView extends View {
             clearPatternDrawLookup();
             for (int i = 0; i < numCircles; i++) {
                 final Cell cell = pattern.get(i);
-                drawLookup[cell.getRow()][cell.getColumn()] = true;
+//                drawLookup[cell.getRow()][cell.getColumn()] = true;
+                cellManager.draw(cell, true);
             }
 
             // figure out in progress portion of ghosting line
@@ -944,7 +929,8 @@ public class PatternView extends View {
             // / 2);
             for (int j = 0; j < mMatrixWidth; j++) {
                 float leftX = paddingLeft + j * squareWidth;
-                drawCircle(canvas, (int) leftX, (int) topY, drawLookup[i][j]);
+//                drawCircle(canvas, (int) leftX, (int) topY, drawLookup[i][j]);
+                drawCircle(canvas, (int) leftX, (int) topY, cellManager.isDrawn(i, j));
             }
         }
 
@@ -992,7 +978,10 @@ public class PatternView extends View {
                 // only draw the part of the pattern stored in
                 // the lookup table (this is only different in the case
                 // of animation).
-                if (!drawLookup[cell.getRow()][cell.getColumn()]) {
+//                if (!drawLookup[cell.getRow()][cell.getColumn()]) {
+//                    break;
+//                }
+                if (!cellManager.isDrawn(cell)) {
                     break;
                 }
                 anyCircles = true;

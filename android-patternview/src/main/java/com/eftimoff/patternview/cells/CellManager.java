@@ -59,15 +59,22 @@ public class CellManager implements Manager<Cell> {
     }
 
     @Override
-    public void draw(Cell cell) {
+    public void draw(Cell cell, final boolean drawn) {
         final int row = cell.getRow();
         final int column = cell.getColumn();
-        patternDrawLookup[row][column] = true;
+        patternDrawLookup[row][column] = drawn;
     }
 
     @Override
-    public void draw(int row, int column) {
-        patternDrawLookup[row][column] = true;
+    public void draw(int row, int column, final boolean drawn) {
+        patternDrawLookup[row][column] = drawn;
+    }
+
+    @Override
+    public void clearDrawing() {
+        for (int i = 0; i < rows; i++) {
+            Arrays.fill(patternDrawLookup[i], false);
+        }
     }
 
     @Override

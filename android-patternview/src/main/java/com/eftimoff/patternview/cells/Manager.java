@@ -12,9 +12,11 @@ public interface Manager<T> {
 
     void clear();
 
-    void draw(T t);
+    void draw(T t, final boolean drawn);
 
-    void draw(final int row, final int column);
+    void draw(final int row, final int column, final boolean drawn);
+    
+    void clearDrawing();
 
     boolean isDrawn(final int row, final int column);
 

@@ -20,6 +20,9 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.eftimoff.mylibrary.R;
+import com.eftimoff.patternview.cells.Cell;
+import com.eftimoff.patternview.cells.CellManager;
+import com.eftimoff.patternview.utils.PatternUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +36,10 @@ import java.util.List;
  */
 public class PatternView extends View {
 
-    private static int mMatrixWidth = 3;
+    private int mMatrixWidth = 3;
+    private int matrixSize;
 
-    private static int getMatrixSize() {
-        return mMatrixWidth * mMatrixWidth;
-    }
+    private CellManager cellManager;
 
     private static final boolean PROFILE_DRAWING = false;
     private boolean mDrawingProfilingStarted = false;
@@ -59,14 +61,10 @@ public class PatternView extends View {
     private ArrayList<Cell> mPattern;
 
     void init() {
-        mPattern = new ArrayList<>(getMatrixSize());
+        cellManager = new CellManager(mMatrixWidth, mMatrixWidth);
+        matrixSize = cellManager.getSize();
         mPatternDrawLookup = new boolean[mMatrixWidth][mMatrixWidth];
-        Cell.sCells = new Cell[mMatrixWidth][mMatrixWidth];
-        for (int i = 0; i < mMatrixWidth; i++) {
-            for (int j = 0; j < mMatrixWidth; j++) {
-                Cell.sCells[i][j] = new Cell(i, j);
-            }
-        }
+        mPattern = new ArrayList<>(matrixSize);
     }
 
     /**
@@ -139,141 +137,6 @@ public class PatternView extends View {
         return inchesPerDot * mPattern.size();
     }
 
-    /**
-     * Represents a cell in the MATRIX_WIDTH x MATRIX_WIDTH matrix of the unlock
-     * pattern view.
-     */
-    public static class Cell implements Parcelable {
-
-        int mRow;
-        int mColumn;
-
-        // keep # objects limited to MATRIX_SIZE
-        static Cell[][] sCells;
-
-        /**
-         * @param row    The row of the cell.
-         * @param column The column of the cell.
-         */
-        private Cell(int row, int column) {
-            checkRange(row, column);
-            this.mRow = row;
-            this.mColumn = column;
-        }
-
-        /**
-         * Gets the row index.
-         *
-         * @return the row index.
-         */
-        public int getRow() {
-            return mRow;
-        }// getRow()
-
-        /**
-         * Gets the column index.
-         *
-         * @return the column index.
-         */
-        public int getColumn() {
-            return mColumn;
-        }// getColumn()
-
-        /**
-         * Gets the ID.It is counted from left to right, top to bottom of the
-         * matrix, starting by zero.
-         *
-         * @return the ID.
-         */
-        public int getId() {
-            return mRow * mMatrixWidth + mColumn;
-        }// getId()
-
-        /**
-         * @param row    The row of the cell.
-         * @param column The column of the cell.
-         */
-        public static synchronized Cell of(int row, int column) {
-            checkRange(row, column);
-            return sCells[row][column];
-        }
-
-        /**
-         * Gets a cell from its ID.
-         *
-         * @param id the cell ID.
-         * @return the cell.
-         * @author Hai Bison
-         * @since v2.7 beta
-         */
-        public static synchronized Cell of(int id) {
-            return of(id / mMatrixWidth, id % mMatrixWidth);
-        }// of()
-
-        private static void checkRange(int row, int column) {
-            if (row < 0 || row > mMatrixWidth - 1) {
-                throw new IllegalArgumentException("row must be in range 0-"
-                        + (mMatrixWidth - 1));
-            }
-            if (column < 0 || column > mMatrixWidth - 1) {
-                throw new IllegalArgumentException("column must be in range 0-"
-                        + (mMatrixWidth - 1));
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "(r=" + getRow() + ",c=" + getColumn() + ")";
-        }// toString()
-
-        @Override
-        public boolean equals(Object object) {
-            if (object instanceof Cell)
-                return getColumn() == ((Cell) object).getColumn()
-                        && getRow() == ((Cell) object).getRow();
-            return super.equals(object);
-        }// equals()
-
-		/*
-         * PARCELABLE
-		 */
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }// describeContents()
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(getColumn());
-            dest.writeInt(getRow());
-        }// writeToParcel()
-
-        /**
-         * Reads data from parcel.
-         *
-         * @param in the parcel.
-         */
-        public void readFromParcel(Parcel in) {
-            mColumn = in.readInt();
-            mRow = in.readInt();
-        }// readFromParcel()
-
-        public static final Parcelable.Creator<Cell> CREATOR = new Parcelable.Creator<Cell>() {
-
-            public Cell createFromParcel(Parcel in) {
-                return new Cell(in);
-            }// createFromParcel()
-
-            public Cell[] newArray(int size) {
-                return new Cell[size];
-            }// newArray()
-        };// CREATOR
-
-        private Cell(Parcel in) {
-            readFromParcel(in);
-        }// Cell()
-    }// Cell
 
     /**
      * How to display the current pattern.
@@ -534,7 +397,7 @@ public class PatternView extends View {
         }
         final int patternSize = mPattern.size();
         final StringBuilder res = new StringBuilder(patternSize);
-        int padding = String.valueOf(getMatrixSize()).length();
+        int padding = String.valueOf(matrixSize).length();
         for (int i = 0; i < patternSize; i++) {
             int cell = mPattern.get(i).getId();
             res.append(String.format("%0" + padding + "d", cell));
@@ -667,32 +530,32 @@ public class PatternView extends View {
             final ArrayList<Cell> newCells = new ArrayList<>();
             if (!mPattern.isEmpty()) {
                 final Cell lastCell = mPattern.get(mPattern.size() - 1);
-                int dRow = cell.mRow - lastCell.mRow;
-                int dCol = cell.mColumn - lastCell.mColumn;
+                int dRow = cell.getRow() - lastCell.getRow();
+                int dCol = cell.getColumn() - lastCell.getColumn();
                 int rsign = dRow > 0 ? 1 : -1;
                 int csign = dCol > 0 ? 1 : -1;
 
                 if (dRow == 0) {
                     for (int i = 1; i < Math.abs(dCol); i++) {
-                        newCells.add(new Cell(lastCell.mRow, lastCell.mColumn
+                        newCells.add(new Cell(lastCell.getRow(), lastCell.getColumn()
                                 + i * csign));
                     }
                 } else if (dCol == 0) {
                     for (int i = 1; i < Math.abs(dRow); i++) {
-                        newCells.add(new Cell(lastCell.mRow + i * rsign,
-                                lastCell.mColumn));
+                        newCells.add(new Cell(lastCell.getRow() + i * rsign,
+                                lastCell.getColumn()));
                     }
                 } else if (Math.abs(dCol) == Math.abs(dRow)) {
                     for (int i = 1; i < Math.abs(dRow); i++) {
-                        newCells.add(new Cell(lastCell.mRow + i * rsign,
-                                lastCell.mColumn + i * csign));
+                        newCells.add(new Cell(lastCell.getRow() + i * rsign,
+                                lastCell.getColumn() + i * csign));
                     }
                 }
 
             }
             for (Cell fillInGapCell : newCells) {
                 if (fillInGapCell != null
-                        && !mPatternDrawLookup[fillInGapCell.mRow][fillInGapCell.mColumn]) {
+                        && !mPatternDrawLookup[fillInGapCell.getRow()][fillInGapCell.getColumn()]) {
                     addCellToPattern(fillInGapCell);
                 }
             }
@@ -729,7 +592,7 @@ public class PatternView extends View {
         if (mPatternDrawLookup[rowHit][columnHit]) {
             return null;
         }
-        return Cell.of(rowHit, columnHit);
+        return cellManager.get(rowHit, columnHit);
     }
 
     /**
@@ -847,8 +710,8 @@ public class PatternView extends View {
 
                     final Cell lastCell = pattern.get(patternSize - 1);
 
-                    float startX = getCenterXForColumn(lastCell.mColumn);
-                    float startY = getCenterYForRow(lastCell.mRow);
+                    float startX = getCenterXForColumn(lastCell.getColumn());
+                    float startY = getCenterYForRow(lastCell.getRow());
 
                     float left;
                     float top;
@@ -904,15 +767,15 @@ public class PatternView extends View {
                     // Invalidate between the pattern's new cell and the
                     // pattern's previous cell
                     if (hitCell != null) {
-                        startX = getCenterXForColumn(hitCell.mColumn);
-                        startY = getCenterYForRow(hitCell.mRow);
+                        startX = getCenterXForColumn(hitCell.getColumn());
+                        startY = getCenterYForRow(hitCell.getRow());
 
                         if (patternSize >= 2) {
                             // (re-using hitcell for old cell)
                             hitCell = pattern.get(patternSize - 1
                                     - (patternSize - patternSizePreHitDetect));
-                            oldX = getCenterXForColumn(hitCell.mColumn);
-                            oldY = getCenterYForRow(hitCell.mRow);
+                            oldX = getCenterXForColumn(hitCell.getColumn());
+                            oldY = getCenterYForRow(hitCell.getRow());
 
                             if (startX < oldX) {
                                 left = startX;
@@ -976,8 +839,8 @@ public class PatternView extends View {
             mPatternDisplayMode = DisplayMode.Correct;
             notifyPatternStarted();
         } else {
-			/*
-			 * Original source check for mPatternInProgress == true first before
+            /*
+             * Original source check for mPatternInProgress == true first before
 			 * calling this block. But if we do that, there will be nothing
 			 * happened when the user taps at empty area and releases the
 			 * finger. We want the pattern to be reset and the message will be
@@ -987,8 +850,8 @@ public class PatternView extends View {
             notifyPatternCleared();
         }
         if (hitCell != null) {
-            final float startX = getCenterXForColumn(hitCell.mColumn);
-            final float startY = getCenterYForRow(hitCell.mRow);
+            final float startX = getCenterXForColumn(hitCell.getColumn());
+            final float startY = getCenterYForRow(hitCell.getRow());
 
             final float widthOffset = mSquareWidth / 2f;
             final float heightOffset = mSquareHeight / 2f;
@@ -1047,14 +910,14 @@ public class PatternView extends View {
                         / MILLIS_PER_CIRCLE_ANIMATING;
 
                 final Cell currentCell = pattern.get(numCircles - 1);
-                final float centerX = getCenterXForColumn(currentCell.mColumn);
-                final float centerY = getCenterYForRow(currentCell.mRow);
+                final float centerX = getCenterXForColumn(currentCell.getColumn());
+                final float centerY = getCenterYForRow(currentCell.getRow());
 
                 final Cell nextCell = pattern.get(numCircles);
                 final float dx = percentageOfNextCircle
-                        * (getCenterXForColumn(nextCell.mColumn) - centerX);
+                        * (getCenterXForColumn(nextCell.getColumn()) - centerX);
                 final float dy = percentageOfNextCircle
-                        * (getCenterYForRow(nextCell.mRow) - centerY);
+                        * (getCenterYForRow(nextCell.getRow()) - centerY);
                 mInProgressX = centerX + dx;
                 mInProgressY = centerY + dy;
             }
@@ -1129,13 +992,13 @@ public class PatternView extends View {
                 // only draw the part of the pattern stored in
                 // the lookup table (this is only different in the case
                 // of animation).
-                if (!drawLookup[cell.mRow][cell.mColumn]) {
+                if (!drawLookup[cell.getRow()][cell.getColumn()]) {
                     break;
                 }
                 anyCircles = true;
 
-                float centerX = getCenterXForColumn(cell.mColumn);
-                float centerY = getCenterYForRow(cell.mRow);
+                float centerX = getCenterXForColumn(cell.getColumn());
+                float centerY = getCenterYForRow(cell.getRow());
                 if (i == 0) {
                     currentPath.moveTo(centerX, centerY);
                 } else {
@@ -1273,8 +1136,7 @@ public class PatternView extends View {
     protected void onRestoreInstanceState(Parcelable state) {
         final SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
-        setPattern(DisplayMode.Correct,
-                PatternUtils.stringToPatternOld(ss.getSerializedPattern()));
+        setPattern(DisplayMode.Correct, PatternUtils.stringToPatternOld(ss.getSerializedPattern(), cellManager));
         mPatternDisplayMode = DisplayMode.values()[ss.getDisplayMode()];
         mInputEnabled = ss.isInputEnabled();
         mInStealthMode = ss.isInStealthMode();

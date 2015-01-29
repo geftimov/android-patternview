@@ -44,7 +44,7 @@ public class CellManager implements Manager<Cell> {
     }
 
     @Override
-    public Cell get(final int row, final int column) {
+    public synchronized Cell get(final int row, final int column) {
         return cells[row][column];
     }
 

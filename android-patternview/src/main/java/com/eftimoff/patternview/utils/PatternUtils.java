@@ -29,6 +29,7 @@ public class PatternUtils {
 
     public static final String SHA1 = "SHA-1";
 
+
     public static List<Cell> stringToPatternOld(final String string, final CellManager cellManager) {
         List<Cell> result = new ArrayList<>();
 

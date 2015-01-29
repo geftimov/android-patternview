@@ -5,8 +5,8 @@
 
         <!-- This is the maximum size the view will take in wrap_content mode. -->
         <attr name="maxSize" format="dimension" />
-        <attr name="defaultCircleColor" format="reference" />
-
+        <!-- The color of the circle. -->
+        <attr name="circleColor" format="color" />
         <!-- Number of rows and columns in the matrix. -->
         <attr name="gridSize" format="integer" />
         <!-- The color of the path between the cells. -->

@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.os.Debug;
 import android.os.Parcel;
@@ -48,9 +50,11 @@ public class PatternView extends View {
     /**
      * The paint the will draw the path.
      */
-    private final Paint mPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint pathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * The paint of the inner and outer circle.
+     */
+    private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private static final boolean PROFILE_DRAWING = false;
     private boolean mDrawingProfilingStarted = false;
@@ -94,7 +98,6 @@ public class PatternView extends View {
     private Bitmap mBitmapBtnDefault;
     private Bitmap mBitmapBtnTouched;
     private Bitmap mBitmapCircleDefault;
-    private int mBitmapCircleSelectedResourceId = R.drawable.pattern_btn_touched;
     private Bitmap mBitmapCircleSelected;
     private Bitmap mBitmapCircleRed;
 
@@ -127,11 +130,11 @@ public class PatternView extends View {
         super(context, attrs, defStyle);
         getFromAttributes(context, attrs);
         init();
-
-        mPathPaint.setDither(true);
-        mPathPaint.setStyle(Paint.Style.STROKE);
-        mPathPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPathPaint.setStrokeCap(Paint.Cap.ROUND);
+        pathPaint.setAlpha(128);
+        pathPaint.setDither(true);
+        pathPaint.setStyle(Paint.Style.STROKE);
+        pathPaint.setStrokeJoin(Paint.Join.ROUND);
+        pathPaint.setStrokeCap(Paint.Cap.ROUND);
         loadBitmaps();
     }
 
@@ -139,9 +142,8 @@ public class PatternView extends View {
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PatternView);
         try {
             maxSize = typedArray.getDimensionPixelSize(R.styleable.PatternView_maxSize, 0);
-            //TODO Why this does not work.
-            mBitmapCircleSelectedResourceId = typedArray.getResourceId(R.styleable.PatternView_defaultCircleColor, R.drawable.pattern_circle_white);
-            mPathPaint.setColor(typedArray.getColor(R.styleable.PatternView_pathColor, Color.WHITE));
+            circlePaint.setColorFilter(new PorterDuffColorFilter(typedArray.getColor(R.styleable.PatternView_circleColor, Color.RED), PorterDuff.Mode.SRC_ATOP));
+            pathPaint.setColor(typedArray.getColor(R.styleable.PatternView_pathColor, Color.WHITE));
             gridSize = typedArray.getInt(R.styleable.PatternView_gridSize, 3);
         } finally {
             typedArray.recycle();
@@ -176,7 +178,6 @@ public class PatternView extends View {
      * @param resId
      */
     public void setSelectedBitmap(int resId) {
-        mBitmapCircleSelectedResourceId = resId;
         // Apply changes
         loadBitmaps();
     }
@@ -187,12 +188,8 @@ public class PatternView extends View {
         mBitmapBtnTouched = mBitmapBtnDefault;
         mBitmapCircleDefault = getBitmapFor(R.drawable.pattern_button_untouched);
 
-        mBitmapCircleSelected = getBitmapFor(mBitmapCircleSelectedResourceId);
+        mBitmapCircleSelected = getBitmapFor(R.drawable.pattern_circle_white);
         mBitmapCircleRed = getBitmapFor(R.drawable.pattern_circle_blue);
-
-        // mBitmapArrowGreenUp =
-        // getBitmapFor(R.drawable.indicator_code_lock_drag_direction_green_up);
-        // mBitmapArrowRedUp = getBitmapFor(R.drawable.pattern_circle_red);
 
         // bitmaps have the size of the largest bitmap in this group
         final Bitmap[] bitmaps = {mBitmapBtnDefault,
@@ -758,6 +755,7 @@ public class PatternView extends View {
                 }
             }
         }
+        invalidate();
     }
 
     private void handleActionUp() {
@@ -876,7 +874,7 @@ public class PatternView extends View {
         final float squareHeight = mSquareHeight;
 
         float radius = (squareWidth * mDiameterFactor * 0.5f);
-        mPathPaint.setStrokeWidth(radius);
+        pathPaint.setStrokeWidth(radius);
 
         final Path currentPath = mCurrentPath;
         currentPath.rewind();
@@ -887,11 +885,8 @@ public class PatternView extends View {
 
         for (int i = 0; i < gridSize; i++) {
             float topY = paddingTop + i * squareHeight;
-            // float centerY = mPaddingTop + i * mSquareHeight + (mSquareHeight
-            // / 2);
             for (int j = 0; j < gridSize; j++) {
                 float leftX = paddingLeft + j * squareWidth;
-//                drawCircle(canvas, (int) leftX, (int) topY, drawLookup[i][j]);
                 drawCircle(canvas, (int) leftX, (int) topY, cellManager.isDrawn(i, j));
             }
         }
@@ -908,29 +903,8 @@ public class PatternView extends View {
         // draw the arrows associated with the path (unless the user is in
         // progress, and
         // we are in stealth mode)
-        boolean oldFlag = (mPaint.getFlags() & Paint.FILTER_BITMAP_FLAG) != 0;
-        mPaint.setFilterBitmap(true); // draw with higher quality since we
-        // render with transforms
-
-        // Not drawing arrows
-        // if (drawPath) {
-        // for (int i = 0; i < count - 1; i++) {
-        // Cell cell = pattern.get(i);
-        // Cell next = pattern.get(i + 1);
-        //
-        // // only draw the part of the pattern stored in
-        // // the lookup table (this is only different in the case
-        // // of animation).
-        // if (!drawLookup[next.mRow][next.mColumn]) {
-        // break;
-        // }
-        //
-        // float leftX = paddingLeft + cell.mColumn * squareWidth;
-        // float topY = paddingTop + cell.mRow * squareHeight;
-        //
-        // drawArrow(canvas, leftX, topY, cell, next);
-        // }
-        // }
+        boolean oldFlag = (circlePaint.getFlags() & Paint.FILTER_BITMAP_FLAG) != 0;
+        circlePaint.setFilterBitmap(true);
 
         if (drawPath) {
             boolean anyCircles = false;
@@ -940,9 +914,6 @@ public class PatternView extends View {
                 // only draw the part of the pattern stored in
                 // the lookup table (this is only different in the case
                 // of animation).
-//                if (!drawLookup[cell.getRow()][cell.getColumn()]) {
-//                    break;
-//                }
                 if (!cellManager.isDrawn(cell)) {
                     break;
                 }
@@ -962,61 +933,11 @@ public class PatternView extends View {
                     && anyCircles && count > 1) {
                 currentPath.lineTo(mInProgressX, mInProgressY);
             }
-            canvas.drawPath(currentPath, mPathPaint);
+            canvas.drawPath(currentPath, pathPaint);
         }
 
-        mPaint.setFilterBitmap(oldFlag); // restore default flag
+        circlePaint.setFilterBitmap(oldFlag); // restore default flag
     }
-
-    // private void drawArrowUnused(Canvas canvas, float leftX, float topY,
-    // Cell start, Cell end) {
-    // boolean green = mPatternDisplayMode != DisplayMode.Wrong;
-    //
-    // final int endRow = end.mRow;
-    // final int startRow = start.mRow;
-    // final int endColumn = end.mColumn;
-    // final int startColumn = start.mColumn;
-    //
-    // // offsets for centering the bitmap in the cell
-    // final int offsetX = ((int) mSquareWidth - mBitmapWidth) / 2;
-    // final int offsetY = ((int) mSquareHeight - mBitmapHeight) / 2;
-    //
-    // // compute transform to place arrow bitmaps at correct angle inside
-    // // circle.
-    // // This assumes that the arrow image is drawn at 12:00 with it's top
-    // // edge
-    // // coincident with the circle bitmap's top edge.
-    // Bitmap arrow = green ? mBitmapArrowGreenUp : mBitmapArrowRedUp;
-    // final int cellWidth = mBitmapWidth;
-    // final int cellHeight = mBitmapHeight;
-    //
-    // // the up arrow bitmap is at 12:00, so find the rotation from x axis and
-    // // add 90 degrees.
-    // final float theta = (float) Math.atan2((double) (endRow - startRow),
-    // (double) (endColumn - startColumn));
-    // final float angle = (float) Math.toDegrees(theta) + 90.0f;
-    //
-    // // compose matrix
-    // float sx = Math.min(mSquareWidth / mBitmapWidth, 1.0f);
-    // float sy = Math.min(mSquareHeight / mBitmapHeight, 1.0f);
-    // mArrowMatrix.setTranslate(leftX + offsetX, topY + offsetY); // transform
-    // // to cell
-    // // position
-    // mArrowMatrix.preTranslate(mBitmapWidth / 2, mBitmapHeight / 2);
-    // mArrowMatrix.preScale(sx, sy);
-    // mArrowMatrix.preTranslate(-mBitmapWidth / 2, -mBitmapHeight / 2);
-    // mArrowMatrix.preRotate(angle, cellWidth / 2.0f, cellHeight / 2.0f); //
-    // rotate
-    // // about
-    // // cell
-    // // center
-    // mArrowMatrix.preTranslate((cellWidth - arrow.getWidth()) / 2.0f, 0.0f);
-    // // translate
-    // // to
-    // // 12:00
-    // // pos
-    // canvas.drawBitmap(arrow, mArrowMatrix, mPaint);
-    // }
 
     /**
      * @param canvas
@@ -1071,8 +992,8 @@ public class PatternView extends View {
         mCircleMatrix.preScale(sx, sy);
         mCircleMatrix.preTranslate(-mBitmapWidth / 2, -mBitmapHeight / 2);
 
-        canvas.drawBitmap(outerCircle, mCircleMatrix, mPaint);
-        canvas.drawBitmap(innerCircle, mCircleMatrix, mPaint);
+        canvas.drawBitmap(outerCircle, mCircleMatrix, circlePaint);
+        canvas.drawBitmap(innerCircle, mCircleMatrix, circlePaint);
     }
 
     @Override

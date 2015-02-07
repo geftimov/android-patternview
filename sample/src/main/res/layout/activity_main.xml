@@ -7,10 +7,11 @@
 
     <com.eftimoff.patternview.PatternView
         android:id="@+id/patternView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        patternview:pathColor="@android:color/secondary_text_light"
-        patternview:circleColor="@color/accent_material_light"
-        patternview:gridSize="4"/>
+        android:layout_centerInParent="true"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        patternview:pathColor="@color/primary_dark_material_light"
+        patternview:circleColor="@color/highlighted_text_material_light"
+        patternview:gridSize="15"/>
 
 </RelativeLayout>

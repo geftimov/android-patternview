@@ -2,7 +2,7 @@
 
 View for locking and unlocking.
 
-![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_empty_pattern.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_pattern_correct.png)
+![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_empty_pattern.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_pattern_correct.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_mm.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_small.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_skyscrapers.png)
 
 ##### Attributes
 

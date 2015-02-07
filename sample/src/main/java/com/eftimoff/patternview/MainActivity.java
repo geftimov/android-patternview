@@ -23,7 +23,7 @@ public class MainActivity extends ActionBarActivity {
             public void onPatternDetected() {
                 if (patternString == null) {
                     patternString = patternView.getPatternString();
-                    patternView.clearPattern();
+//                    patternView.clearPattern();
                     return;
                 }
                 if (patternString.equals(patternView.getPatternString())) {
@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
                     return;
                 }
                 Toast.makeText(getApplicationContext(), "PATTERN NOT CORRECT", Toast.LENGTH_SHORT).show();
-                patternView.clearPattern();
+//                patternView.clearPattern();
             }
         });
 

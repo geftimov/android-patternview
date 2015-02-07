@@ -4,6 +4,17 @@ View for locking and unlocking.
 
 ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_empty_pattern.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_pattern_correct.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_mm.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_small.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_skyscrapers.png)
 
+##### How to use
+
+    <com.eftimoff.patternview.PatternView
+        xmlns:patternview="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/patternView"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        patternview:pathColor="@color/primary_dark_material_light"
+        patternview:circleColor="@color/highlighted_text_material_light"
+        patternview:gridSize="4"/>
+        
 ##### Attributes
 
 |     attr    	|  default  	|                         mean                         	|

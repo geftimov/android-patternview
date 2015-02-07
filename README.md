@@ -1,11 +1,17 @@
 ## android-patternview
 
+View for locking and unlocking.
+
+![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_empty_pattern.png) ![svg](https://github.com/geftimov/android-patternview/blob/master/art/rsz_pattern_correct.png)
+
+##### Attributes
+
 |     attr    	|  default  	|                         mean                         	|
 |:-----------:	|:---------:	|:----------------------------------------------------:	|
 |   maxSize   	|     0     	|         Maximum size if WRAP_CONTENT is used.        	|
 | circleColor 	| #FFFF0000 	|          Color of the selected cell circle.          	|
 |   gridSize  	|     3     	|         Size of the grid. Example 4 for 4x4.         	|
-|  pathColor  	|           	| The color of the path that is following the pointer. 	|
+|  pathColor  	| #FFFFFF       | The color of the path that is following the pointer. 	|
 
 ##### Limitations
 
@@ -15,7 +21,8 @@
 #### TODO
 
 1. See the padding , and why it is not applied.
-2. Make wiki.
+2. Make wiki for all the settings.
+3. Make gif and upload it.
 
 #### Contributors
 

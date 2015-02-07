@@ -2,54 +2,36 @@ package com.eftimoff.patternview;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
 
     private PatternView patternView;
 
+    private String patternString;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         patternView = (PatternView) findViewById(R.id.patternView);
-
-        patternView.setOnPatternListener(new PatternView.OnPatternListener() {
-
-            private String patternString;
-
-            @Override
-            public void onPatternStart() {
-                Log.i("!!!", "onPatternStart");
-
-            }
-
-            @Override
-            public void onPatternCleared() {
-                Log.i("!!!", "onPatternCleared");
-
-            }
-
-            @Override
-            public void onPatternCellAdded() {
-                Log.i("!!!", "onPatternCellAdded");
-//
-            }
-
+        Toast.makeText(getApplicationContext(), "ENTER PATTERN", Toast.LENGTH_LONG).show();
+        patternView.setOnPatternDetectedListener(new PatternView.OnPatternDetectedListener() {
+            
             @Override
             public void onPatternDetected() {
-                Log.i("!!!", "onPatternDetected");
                 if (patternString == null) {
                     patternString = patternView.getPatternString();
                     patternView.clearPattern();
                     return;
                 }
                 if (patternString.equals(patternView.getPatternString())) {
-                    Log.i("!!!", "CORRECT");
+                    Toast.makeText(getApplicationContext(), "PATTERN CORRECT", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-//                patternView.setDisplayMode(PatternView.DisplayMode.Wrong);
-//                patternView.setDisplayMode(PatternView.DisplayMode.Correct);
+                Toast.makeText(getApplicationContext(), "PATTERN NOT CORRECT", Toast.LENGTH_SHORT).show();
+                patternView.clearPattern();
             }
         });
 

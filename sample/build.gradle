@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.0"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.eftimoff.patternview"
@@ -16,4 +16,5 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile project(':android-patternview')
+//    compile 'com.eftimoff:android-patternview:1.0.0@aar'
 }

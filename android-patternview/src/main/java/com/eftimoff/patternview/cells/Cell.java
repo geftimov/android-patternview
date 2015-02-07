@@ -47,8 +47,10 @@ public class Cell implements Parcelable {
      *
      * @return the ID.
      */
-    public int getId() {
-        return row * column + column;
+    public String getId() {
+        final String formatRow = String.format("%03d", row);
+        final String formatColumn = String.format("%03d", column);
+        return formatRow + "-" + formatColumn;
     }
 
 

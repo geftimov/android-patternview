@@ -1,5 +1,7 @@
 ## android-patternview
 
+[![Join the chat at https://gitter.im/geftimov/android-patternview](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/geftimov/android-patternview?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-android--patternview-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1495)
 
 View for locking and unlocking.

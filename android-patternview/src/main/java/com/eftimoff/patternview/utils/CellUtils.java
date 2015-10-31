@@ -51,4 +51,28 @@ public class CellUtils {
         }
         return result;
     }
+
+    /**
+     * Converts a int array to a pattern
+     *
+     * @param array
+     * @return
+     */
+    public static List<Cell> intArrayToPattern(final int[] array, final CellManager cellManager) {
+        final List<Cell> result = new ArrayList<>();
+
+        if (array.length == 0) {
+            return result;
+        }
+
+        for (int i = 0, j = array.length; i < j; i += 2) {
+            final int row = array[i];
+            final int column = array[i + 1];
+            final Cell cell = cellManager.get(row, column);
+            result.add(cell);
+        }
+        return result;
+    }
+
+
 }

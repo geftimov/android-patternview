@@ -48,9 +48,13 @@ public class PatternView extends View {
      */
     private final Paint pathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     /**
-     * The paint of the inner and outer circle.
+     * The paint of the circle.
      */
     private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * The paint of the dot.
+     */
+    private final Paint dotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private static final boolean PROFILE_DRAWING = false;
     private boolean drawingProfilingStarted = false;
@@ -135,7 +139,10 @@ public class PatternView extends View {
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PatternView);
         try {
             maxSize = typedArray.getDimensionPixelSize(R.styleable.PatternView_maxSize, 0);
-            circlePaint.setColorFilter(new PorterDuffColorFilter(typedArray.getColor(R.styleable.PatternView_circleColor, Color.RED), PorterDuff.Mode.SRC_ATOP));
+            final int circleColor = typedArray.getColor(R.styleable.PatternView_circleColor, Color.RED);
+            final int dotColor = typedArray.getColor(R.styleable.PatternView_dotColor, circleColor);
+            circlePaint.setColorFilter(new PorterDuffColorFilter(circleColor, PorterDuff.Mode.MULTIPLY));
+            dotPaint.setColorFilter(new PorterDuffColorFilter(dotColor, PorterDuff.Mode.MULTIPLY));
             pathPaint.setColor(typedArray.getColor(R.styleable.PatternView_pathColor, Color.WHITE));
             gridSize = typedArray.getInt(R.styleable.PatternView_gridSize, 3);
         } finally {
@@ -365,6 +372,19 @@ public class PatternView extends View {
             }
         }
         return res.toString();
+    }
+
+    public int[] patternToIntArray() {
+        if (mPattern == null) {
+            return new int[0];
+        }
+        final int patternSize = mPattern.size();
+        final int[] array = new int[patternSize * 2];
+        for (int i = 0; i < patternSize; i++) {
+            array[i] = mPattern.get(i).getRow();
+            array[i + 1] = mPattern.get(i).getColumn();
+        }
+        return array;
     }
 
     private void notifyCellAdded() {
@@ -910,8 +930,10 @@ public class PatternView extends View {
         // draw the arrows associated with the path (unless the user is in
         // progress, and
         // we are in stealth mode)
-        boolean oldFlag = (circlePaint.getFlags() & Paint.FILTER_BITMAP_FLAG) != 0;
+        boolean oldFlagCircle = (circlePaint.getFlags() & Paint.FILTER_BITMAP_FLAG) != 0;
+        boolean oldFlagDot = (dotPaint.getFlags() & Paint.FILTER_BITMAP_FLAG) != 0;
         circlePaint.setFilterBitmap(true);
+        dotPaint.setFilterBitmap(true);
 
         if (drawPath) {
             boolean anyCircles = false;
@@ -943,7 +965,8 @@ public class PatternView extends View {
             canvas.drawPath(currentPath, pathPaint);
         }
 
-        circlePaint.setFilterBitmap(oldFlag); // restore default flag
+        circlePaint.setFilterBitmap(oldFlagCircle); // restore default flag
+        dotPaint.setFilterBitmap(oldFlagDot); // restore default flag
     }
 
     /**
@@ -1000,13 +1023,13 @@ public class PatternView extends View {
         circleMatrix.preTranslate(-bitmapWidth / 2, -bitmapHeight / 2);
 
         canvas.drawBitmap(outerCircle, circleMatrix, circlePaint);
-        canvas.drawBitmap(innerCircle, circleMatrix, circlePaint);
+        canvas.drawBitmap(innerCircle, circleMatrix, dotPaint);
     }
 
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-        return new SavedState(superState, patternToString(),
+        return new SavedState(superState, patternToIntArray(),
                 patternDisplayMode.ordinal(), inputEnabled, inStealthMode,
                 enableHapticFeedback);
     }
@@ -1015,7 +1038,7 @@ public class PatternView extends View {
     protected void onRestoreInstanceState(Parcelable state) {
         final SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
-        setPattern(DisplayMode.Correct, CellUtils.stringToPattern(ss.getSerializedPattern(), cellManager));
+        setPattern(DisplayMode.Correct, CellUtils.intArrayToPattern(ss.getSerializedPattern(), cellManager));
         patternDisplayMode = DisplayMode.values()[ss.getDisplayMode()];
         inputEnabled = ss.isInputEnabled();
         inStealthMode = ss.isInStealthMode();
@@ -1027,7 +1050,7 @@ public class PatternView extends View {
      */
     private static class SavedState extends BaseSavedState {
 
-        private final String mSerializedPattern;
+        private final int[] mSerializedPattern;
         private final int mDisplayMode;
         private final boolean mInputEnabled;
         private final boolean mInStealthMode;
@@ -1036,7 +1059,7 @@ public class PatternView extends View {
         /**
          * Constructor called from {@link PatternView#onSaveInstanceState()}
          */
-        private SavedState(Parcelable superState, String serializedPattern,
+        private SavedState(Parcelable superState, int[] serializedPattern,
                            int displayMode, boolean inputEnabled, boolean inStealthMode,
                            boolean tactileFeedbackEnabled) {
             super(superState);
@@ -1052,14 +1075,14 @@ public class PatternView extends View {
          */
         private SavedState(Parcel in) {
             super(in);
-            mSerializedPattern = in.readString();
+            mSerializedPattern = in.createIntArray();
             mDisplayMode = in.readInt();
             mInputEnabled = (Boolean) in.readValue(null);
             mInStealthMode = (Boolean) in.readValue(null);
             mTactileFeedbackEnabled = (Boolean) in.readValue(null);
         }
 
-        public String getSerializedPattern() {
+        public int[] getSerializedPattern() {
             return mSerializedPattern;
         }
 
@@ -1082,7 +1105,7 @@ public class PatternView extends View {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            dest.writeString(mSerializedPattern);
+            dest.writeIntArray(mSerializedPattern);
             dest.writeInt(mDisplayMode);
             dest.writeValue(mInputEnabled);
             dest.writeValue(mInStealthMode);

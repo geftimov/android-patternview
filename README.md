@@ -15,6 +15,7 @@ View for locking and unlocking.
         android:layout_height="250dp"
         patternview:pathColor="@color/primary_dark_material_light"
         patternview:circleColor="@color/highlighted_text_material_light"
+        patternview:dotColor="@color/highlighted_text_material_light"
         patternview:gridSize="4"/>
         
 ##### Attributes
@@ -23,6 +24,7 @@ View for locking and unlocking.
 |:-----------:	|:---------:	|:----------------------------------------------------:	|
 |   maxSize   	|     0     	|         Maximum size if WRAP_CONTENT is used.        	|
 | circleColor 	| #FFFF0000 	|          Color of the selected cell circle.          	|
+| dotColor      | circleColor 	|          Color of the cell dot.                     	|
 |   gridSize  	|     3     	|         Size of the grid. Example 4 for 4x4.         	|
 |  pathColor  	| #FFFFFF       | The color of the path that is following the pointer. 	|
 

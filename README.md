@@ -50,6 +50,20 @@ Make and pull - request and we can discuss it.
 		compile 'com.eftimoff:android-patternview:1.0.4@aar'
 	}
 
+##### Changelog
+
+<b>1.0.4</b>
+
+	[Feature] Added dotColor to be able to change only the color of the dots.
+	
+<b>1.0.3</b>
+
+	[Fix] Fix a bug with crashing on orientation change.
+
+<b>1.0.2</b>
+
+	[Feature] Support for API 9
+
 ## Licence
 
     Copyright 2015 Georgi Eftimov

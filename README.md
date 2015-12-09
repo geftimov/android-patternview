@@ -47,7 +47,7 @@ Make and pull - request and we can discuss it.
 ##### Download
 
 	dependencies {
-		compile 'com.eftimoff:android-patternview:1.0.3@aar'
+		compile 'com.eftimoff:android-patternview:1.0.4@aar'
 	}
 
 ## Licence

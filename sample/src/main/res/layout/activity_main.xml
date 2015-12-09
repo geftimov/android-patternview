@@ -11,7 +11,7 @@
         android:layout_height="250dp"
         patternview:pathColor="@color/primary_dark_material_light"
         patternview:circleColor="@color/highlighted_text_material_light"
-        patternview:dotColor="@color/highlighted_text_material_light"
+        patternview:dotColor="@android:color/black"
         patternview:gridSize="3"/>
 
 </RelativeLayout>

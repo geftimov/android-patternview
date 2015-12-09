@@ -16,5 +16,5 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
 //    compile project(':android-patternview')
-    compile 'com.eftimoff:android-patternview:1.0.1@aar'
+    compile 'com.eftimoff:android-patternview:1.0.4@aar'
 }

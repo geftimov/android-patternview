@@ -16,7 +16,8 @@ View for locking and unlocking.
         patternview:pathColor="@color/primary_dark_material_light"
         patternview:circleColor="@color/highlighted_text_material_light"
         patternview:dotColor="@color/highlighted_text_material_light"
-        patternview:gridSize="4"/>
+        patternview:gridRows="4"
+        patternview:gridColumns="4"/>
         
 ##### Attributes
 
@@ -26,7 +27,7 @@ View for locking and unlocking.
 | circleColor 	| #FFFF0000 	|          Color of the selected cell circle.          	|
 | dotColor      | circleColor 	|          Color of the cell dot.                     	|
 |   gridRows 	|     3     	|         Rows of the grid. Example 4 for 4xcolums.         	|
-|   gridColums  	|     3     	|         Columns of the grid. Example 4 for rowsx4.         	|
+|   gridColumns  	|     3     	|         Columns of the grid. Example 4 for rowsx4.         	|
 |  pathColor  	| #FFFFFF       | The color of the path that is following the pointer. 	|
 
 ##### Limitations

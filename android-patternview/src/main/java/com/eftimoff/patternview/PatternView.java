@@ -34,7 +34,7 @@ public class PatternView extends View {
     /**
      * The width of the matrix.
      */
-    private int gridColums;
+    private int gridColumns;
     /**
      * The width of the matrix.
      */
@@ -148,7 +148,7 @@ public class PatternView extends View {
             circlePaint.setColorFilter(new PorterDuffColorFilter(circleColor, PorterDuff.Mode.MULTIPLY));
             dotPaint.setColorFilter(new PorterDuffColorFilter(dotColor, PorterDuff.Mode.MULTIPLY));
             pathPaint.setColor(typedArray.getColor(R.styleable.PatternView_pathColor, Color.WHITE));
-            gridColums = typedArray.getInt(R.styleable.PatternView_gridColumns, 3);
+            gridColumns = typedArray.getInt(R.styleable.PatternView_gridColumns, 3);
             gridRows = typedArray.getInt(R.styleable.PatternView_gridRows, 3);
         } finally {
             typedArray.recycle();
@@ -156,7 +156,7 @@ public class PatternView extends View {
     }
 
     private void init() {
-        cellManager = new CellManager(gridRows, gridColums);
+        cellManager = new CellManager(gridRows, gridColumns);
         final int matrixSize = cellManager.getSize();
         mPattern = new ArrayList<>(matrixSize);
     }
@@ -440,7 +440,7 @@ public class PatternView extends View {
      */
     private void clearPatternDrawLookup() {
         for (int i = 0; i < gridRows; i++) {
-            for (int j = 0; j < gridColums; j++) {
+            for (int j = 0; j < gridColumns; j++) {
                 cellManager.clearDrawing();
             }
         }
@@ -465,7 +465,7 @@ public class PatternView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         int mPaddingRight = padding;
         final int width = w - paddingLeft - mPaddingRight;
-        squareWidth = width / (float) gridColums;
+        squareWidth = width / (float) gridColumns;
 
         int mPaddingBottom = padding;
         final int height = h - paddingTop - mPaddingBottom;
@@ -477,7 +477,7 @@ public class PatternView extends View {
         // View should be large enough to contain MATRIX_WIDTH side-by-side
         // target
         // bitmaps
-        return gridColums * bitmapWidth;
+        return gridColumns * bitmapWidth;
     }
 
     @Override
@@ -613,7 +613,7 @@ public class PatternView extends View {
         float hitSize = squareWidth * hitFactor;
 
         float offset = paddingLeft + (squareWidth - hitSize) / 2f;
-        for (int i = 0; i < gridColums; i++) {
+        for (int i = 0; i < gridColumns; i++) {
 
             final float hitLeft = offset + squareWidth * i;
             if (x >= hitLeft && x <= hitLeft + hitSize) {
@@ -919,7 +919,7 @@ public class PatternView extends View {
 
         for (int i = 0; i < gridRows; i++) {
             float topY = paddingTop + i * squareHeight;
-            for (int j = 0; j < gridColums; j++) {
+            for (int j = 0; j < gridColumns; j++) {
                 float leftX = paddingLeft + j * squareWidth;
                 drawCircle(canvas, (int) leftX, (int) topY, cellManager.isDrawn(i, j));
             }

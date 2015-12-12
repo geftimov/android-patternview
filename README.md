@@ -25,19 +25,18 @@ View for locking and unlocking.
 |   maxSize   	|     0     	|         Maximum size if WRAP_CONTENT is used.        	|
 | circleColor 	| #FFFF0000 	|          Color of the selected cell circle.          	|
 | dotColor      | circleColor 	|          Color of the cell dot.                     	|
-|   gridSize  	|     3     	|         Size of the grid. Example 4 for 4x4.         	|
+|   gridRows 	|     3     	|         Rows of the grid. Example 4 for 4xcolums.         	|
+|   gridColums  	|     3     	|         Columns of the grid. Example 4 for rowsx4.         	|
 |  pathColor  	| #FFFFFF       | The color of the path that is following the pointer. 	|
 
 ##### Limitations
 
 1. Padding for the view does not work.
-2. Only square is supported.
 
 #### TODO
 
 1. See the padding , and why it is not applied.
 2. Make wiki for all the settings.
-3. Make gif and upload it.
 
 #### Contributors
 
@@ -47,10 +46,14 @@ Make and pull - request and we can discuss it.
 ##### Download
 
 	dependencies {
-		compile 'com.eftimoff:android-patternview:1.0.4@aar'
+		compile 'com.eftimoff:android-patternview:1.0.5@aar'
 	}
 
 ##### Changelog
+
+<b>1.0.5</b>
+
+	[Feature] Not only fixed size now. Can set different column and row size.
 
 <b>1.0.4</b>
 

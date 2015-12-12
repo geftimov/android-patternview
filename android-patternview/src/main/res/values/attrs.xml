@@ -7,8 +7,10 @@
         <attr name="circleColor" format="color"/>
         <!-- The color of the dot. -->
         <attr name="dotColor" format="color"/>
-        <!-- Number of rows and columns in the matrix. -->
-        <attr name="gridSize" format="integer"/>
+        <!-- Number of rows in the matrix. -->
+        <attr name="gridRows" format="integer"/>
+        <!-- Number of columns in the matrix. -->
+        <attr name="gridColumns" format="integer"/>
         <!-- The color of the path between the cells. -->
         <attr name="pathColor" format="color"/>
     </declare-styleable>

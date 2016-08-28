@@ -49,7 +49,7 @@ See CONTRIBUTORS.md .
 ##### Download
 
 	dependencies {
-		compile 'com.eftimoff:android-patternview:1.0.6@aar'
+		compile group: 'com.eftimoff', name: 'android-patternview', version: '1.0.6'
 	}
 
 ##### Changelog

@@ -1,5 +1,0 @@
-<root>
-    <item name='android.view.MotionEvent'>
-        <annotation name='org.jetbrains.annotations.NotNull'/>
-    </item>
-</root>

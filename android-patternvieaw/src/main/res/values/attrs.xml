@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="PatternView">
-        <!-- This is the maximum size the view will take in wrap_content mode. -->
-        <attr name="maxSize" format="dimension"/>
-        <!-- The color of the circle. -->
-        <attr name="circleColor" format="color"/>
-        <!-- The color of the dot. -->
-        <attr name="dotColor" format="color"/>
+        <!-- This is the size the circle. -->
+        <attr name="circleSize" format="dimension" />
         <!-- Number of rows in the matrix. -->
-        <attr name="gridRows" format="integer"/>
+        <attr name="gridRows" format="integer" />
         <!-- Number of columns in the matrix. -->
-        <attr name="gridColumns" format="integer"/>
+        <attr name="gridColumns" format="integer" />
         <!-- The color of the path between the cells. -->
-        <attr name="pathColor" format="color"/>
+        <attr name="pathColor" format="color" />
+        <!-- The color of the circle. -->
+        <attr name="circleColor" format="color" />
+        <!-- The color of the dot. -->
+        <attr name="dotColor" format="color" />
     </declare-styleable>
 
 </resources>

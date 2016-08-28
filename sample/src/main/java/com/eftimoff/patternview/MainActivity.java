@@ -19,9 +19,9 @@ public class MainActivity extends ActionBarActivity {
         patternView = (PatternView) findViewById(R.id.patternView);
         patternView.setTactileFeedbackEnabled(false);
         Toast.makeText(getApplicationContext(), "ENTER PATTERN", Toast.LENGTH_LONG).show();
-        patternView.setPathColor(Color.RED);
-        patternView.setDotColor(Color.RED);
-        patternView.setCircleColor(Color.RED);
+        patternView.setPathColor(Color.BLACK);
+        patternView.setDotColor(Color.BLACK);
+        patternView.setCircleColor(Color.BLACK);
         patternView.setOnPatternDetectedListener(new PatternView.OnPatternDetectedListener() {
 
             @Override

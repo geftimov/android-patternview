@@ -1,15 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:patternview="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context=".MainActivity">
+    xmlns:patternview="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
     <com.eftimoff.patternview.PatternView
         android:id="@+id/patternView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        patternview:gridRows="5"
-        patternview:gridColumns="4" />
+        android:layout_centerInParent="true"
+        patternview:gridColumns="4"
+        patternview:gridRows="5" />
 
 </RelativeLayout>

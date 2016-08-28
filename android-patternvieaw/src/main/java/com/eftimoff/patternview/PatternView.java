@@ -42,7 +42,7 @@ public class PatternView extends View {
     /**
      * The maximum size when it is used wrap content.
      */
-    private int maxSize = 0;
+    private int circleSize;
     /**
      * Manager for the cells.
      */
@@ -153,7 +153,7 @@ public class PatternView extends View {
     private void getFromAttributes(Context context, AttributeSet attrs) {
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PatternView);
         try {
-            maxSize = typedArray.getDimensionPixelSize(R.styleable.PatternView_maxSize, 0);
+            circleSize = typedArray.getDimensionPixelSize(R.styleable.PatternView_circleSize, 200);
             circleColor = typedArray.getColor(R.styleable.PatternView_circleColor, Color.BLACK);
             dotColor = typedArray.getColor(R.styleable.PatternView_dotColor, Color.BLACK);
             pathColor = typedArray.getColor(R.styleable.PatternView_pathColor, Color.BLACK);
@@ -205,8 +205,7 @@ public class PatternView extends View {
 
     private void computeBitmapSize() {
         // bitmaps have the size of the largest bitmap in this group
-        final Bitmap[] bitmaps = {bitmapBtnDefault,
-                bitmapCircleSelected, bitmapCircleRed};
+        final Bitmap[] bitmaps = {bitmapBtnDefault, bitmapCircleSelected, bitmapCircleRed};
         if (isInEditMode()) {
             bitmapWidth = Math.max(bitmapWidth, 150);
             bitmapHeight = Math.max(bitmapHeight, 150);
@@ -508,22 +507,11 @@ public class PatternView extends View {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        int mPaddingRight = padding;
-        final int width = w - paddingLeft - mPaddingRight;
-        squareWidth = width / (float) gridColumns;
-
-        int mPaddingBottom = padding;
-        final int height = h - paddingTop - mPaddingBottom;
-        squareHeight = height / (float) gridRows;
-    }
-
-    @Override
     protected int getSuggestedMinimumWidth() {
         // View should be large enough to contain MATRIX_WIDTH side-by-side
         // target
         // bitmaps
-        return gridColumns * bitmapWidth;
+        return gridColumns * circleSize;
     }
 
     @Override
@@ -531,19 +519,33 @@ public class PatternView extends View {
         // View should be large enough to contain MATRIX_WIDTH side-by-side
         // target
         // bitmaps
-        return gridRows * bitmapWidth;
+        return gridRows * circleSize;
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int height = MeasureSpec.getSize(heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
-        int size = Math.min(width, height);
-        if (maxSize != 0) {
-            size = Math.min(size, maxSize);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        if (widthMode == MeasureSpec.AT_MOST) {
+            width = gridColumns * circleSize;
+            squareWidth = circleSize;
+        } else {
+            squareWidth = width / (float) gridColumns;
         }
-        setMeasuredDimension(size, size);
+        final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        if (heightMode == MeasureSpec.AT_MOST) {
+            height = gridRows * circleSize;
+            squareHeight = circleSize;
+        } else {
+            squareHeight = height / (float) gridRows;
+        }
+
+        squareWidth = Math.min(squareWidth, squareHeight);
+        squareHeight = Math.min(squareWidth, squareHeight);
+        setMeasuredDimension(width, height);
     }
+
 
     /**
      * Determines whether the point x, y will add a new point to the current

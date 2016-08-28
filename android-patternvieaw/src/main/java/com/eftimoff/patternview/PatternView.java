@@ -52,13 +52,25 @@ public class PatternView extends View {
      */
     private final Paint pathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     /**
+     * The color of the path.
+     */
+    private int pathColor;
+    /**
      * The paint of the circle.
      */
     private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     /**
+     * The color of the circle.
+     */
+    private int circleColor;
+    /**
      * The paint of the dot.
      */
     private final Paint dotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * The color of the dot.
+     */
+    private int dotColor;
 
     private static final boolean PROFILE_DRAWING = false;
     private boolean drawingProfilingStarted = false;
@@ -119,7 +131,6 @@ public class PatternView extends View {
     private final int paddingLeft = padding;
     private final int paddingTop = padding;
 
-
     public PatternView(Context context) {
         this(context, null);
     }
@@ -143,11 +154,9 @@ public class PatternView extends View {
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PatternView);
         try {
             maxSize = typedArray.getDimensionPixelSize(R.styleable.PatternView_maxSize, 0);
-            final int circleColor = typedArray.getColor(R.styleable.PatternView_circleColor, Color.RED);
-            final int dotColor = typedArray.getColor(R.styleable.PatternView_dotColor, circleColor);
-            circlePaint.setColorFilter(new PorterDuffColorFilter(circleColor, PorterDuff.Mode.MULTIPLY));
-            dotPaint.setColorFilter(new PorterDuffColorFilter(dotColor, PorterDuff.Mode.MULTIPLY));
-            pathPaint.setColor(typedArray.getColor(R.styleable.PatternView_pathColor, Color.WHITE));
+            circleColor = typedArray.getColor(R.styleable.PatternView_circleColor, Color.BLACK);
+            dotColor = typedArray.getColor(R.styleable.PatternView_dotColor, Color.BLACK);
+            pathColor = typedArray.getColor(R.styleable.PatternView_pathColor, Color.BLACK);
             gridColumns = typedArray.getInt(R.styleable.PatternView_gridColumns, 3);
             gridRows = typedArray.getInt(R.styleable.PatternView_gridRows, 3);
         } finally {
@@ -156,6 +165,9 @@ public class PatternView extends View {
     }
 
     private void init() {
+        setPathColor(pathColor);
+        setCircleColor(circleColor);
+        setDotColor(dotColor);
         cellManager = new CellManager(gridRows, gridColumns);
         final int matrixSize = cellManager.getSize();
         mPattern = new ArrayList<>(matrixSize);
@@ -195,6 +207,11 @@ public class PatternView extends View {
         // bitmaps have the size of the largest bitmap in this group
         final Bitmap[] bitmaps = {bitmapBtnDefault,
                 bitmapCircleSelected, bitmapCircleRed};
+        if (isInEditMode()) {
+            bitmapWidth = Math.max(bitmapWidth, 150);
+            bitmapHeight = Math.max(bitmapHeight, 150);
+            return;
+        }
 
         for (final Bitmap bitmap : bitmaps) {
             bitmapWidth = Math.max(bitmapWidth, bitmap.getWidth());
@@ -247,7 +264,6 @@ public class PatternView extends View {
     public void setTactileFeedbackEnabled(boolean tactileFeedbackEnabled) {
         enableHapticFeedback = tactileFeedbackEnabled;
     }
-
 
     /**
      * Set the call back for pattern start.
@@ -459,6 +475,36 @@ public class PatternView extends View {
      */
     public void enableInput() {
         inputEnabled = true;
+    }
+
+    public int getPathColor() {
+        return pathColor;
+    }
+
+    public void setPathColor(int pathColor) {
+        this.pathColor = pathColor;
+        pathPaint.setColor(pathColor);
+        invalidate();
+    }
+
+    public int getCircleColor() {
+        return circleColor;
+    }
+
+    public void setCircleColor(int circleColor) {
+        this.circleColor = circleColor;
+        circlePaint.setColorFilter(new PorterDuffColorFilter(circleColor, PorterDuff.Mode.MULTIPLY));
+        invalidate();
+    }
+
+    public int getDotColor() {
+        return dotColor;
+    }
+
+    public void setDotColor(int dotColor) {
+        this.dotColor = dotColor;
+        dotPaint.setColorFilter(new PorterDuffColorFilter(dotColor, PorterDuff.Mode.MULTIPLY));
+        invalidate();
     }
 
     @Override
@@ -1178,32 +1224,6 @@ public class PatternView extends View {
          */
         Wrong
     }
-
-//    /**
-//     * The call back interface for detecting patterns entered by the user.
-//     */
-//    public interface OnPatternListener {
-//
-//        /**
-//         * A new pattern has begun.
-//         */
-//        void onPatternStart();
-//
-//        /**
-//         * The pattern was cleared.
-//         */
-//        void onPatternCleared();
-//
-//        /**
-//         * The user extended the pattern currently being drawn by one cell.
-//         */
-//        void onPatternCellAdded();
-//
-//        /**
-//         * A pattern was detected from the user.
-//         */
-//        void onPatternDetected();
-//    }
 
     /**
      * The call back interface for detecting patterns entered by the user.

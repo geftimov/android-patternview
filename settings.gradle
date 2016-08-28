@@ -1,1 +1,1 @@
-include ':sample', 'android-patternview', ':patternview'
+include ':sample', 'android-patternview', ':android-patternvieaw'

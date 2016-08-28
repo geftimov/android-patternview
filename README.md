@@ -11,8 +11,9 @@ View for locking and unlocking.
     <com.eftimoff.patternview.PatternView
         xmlns:patternview="http://schemas.android.com/apk/res-auto"
         android:id="@+id/patternView"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
+        patternview:circleSize="50dp"
         patternview:pathColor="@color/primary_dark_material_light"
         patternview:circleColor="@color/highlighted_text_material_light"
         patternview:dotColor="@color/highlighted_text_material_light"
@@ -23,7 +24,7 @@ View for locking and unlocking.
 
 |     attr    	|  default  	|                         mean                         	|
 |:-----------:	|:---------:	|:----------------------------------------------------:	|
-|   maxSize   	|     0     	|         Maximum size if WRAP_CONTENT is used.        	|
+|   circleSize   	|     0     	|         The circle size if WRAP_CONTENT is used.        	|
 | circleColor 	| #FFFF0000 	|          Color of the selected cell circle.          	|
 | dotColor      | circleColor 	|          Color of the cell dot.                     	|
 |   gridRows 	|     3     	|         Rows of the grid. Example 4 for 4xcolums.         	|
@@ -43,14 +44,20 @@ View for locking and unlocking.
 
 I want to update this library and make it better. So any help will be appreciated.
 Make and pull - request and we can discuss it.
+See CONTRIBUTORS.md .
 
 ##### Download
 
 	dependencies {
-		compile 'com.eftimoff:android-patternview:1.0.5@aar'
+		compile 'com.eftimoff:android-patternview:1.0.6@aar'
 	}
 
 ##### Changelog
+
+<b>1.0.6</b>
+
+	[Fix] Non Square Patterns gets squeezed.
+	[Feature] Add colours dynamically.
 
 <b>1.0.5</b>
 

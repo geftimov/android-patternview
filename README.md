@@ -24,7 +24,7 @@ View for locking and unlocking.
 
 |     attr    	|  default  	|                         mean                         	|
 |:-----------:	|:---------:	|:----------------------------------------------------:	|
-|   circleSize   	|     0     	|         The circle size if WRAP_CONTENT is used.        	|
+|   circleSize   	|     150     	|         The circle size if WRAP_CONTENT is used.        	|
 | circleColor 	| #FFFF0000 	|          Color of the selected cell circle.          	|
 | dotColor      | circleColor 	|          Color of the cell dot.                     	|
 |   gridRows 	|     3     	|         Rows of the grid. Example 4 for 4xcolums.         	|

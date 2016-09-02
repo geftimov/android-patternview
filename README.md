@@ -25,11 +25,11 @@ View for locking and unlocking.
 |     attr    	|  default  	|                         mean                         	|
 |:-----------:	|:---------:	|:----------------------------------------------------:	|
 |   circleSize   	|     150     	|         The circle size if WRAP_CONTENT is used.        	|
-| circleColor 	| #FFFF0000 	|          Color of the selected cell circle.          	|
-| dotColor      | circleColor 	|          Color of the cell dot.                     	|
+| circleColor 	| #000000 	|          Color of the selected cell circle.          	|
+| dotColor      | #000000 	|          Color of the cell dot.                     	|
 |   gridRows 	|     3     	|         Rows of the grid. Example 4 for 4xcolums.         	|
 |   gridColumns  	|     3     	|         Columns of the grid. Example 4 for rowsx4.         	|
-|  pathColor  	| #FFFFFF       | The color of the path that is following the pointer. 	|
+|  pathColor  	| #000000       | The color of the path that is following the pointer. 	|
 
 ##### Limitations
 

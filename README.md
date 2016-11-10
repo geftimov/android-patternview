@@ -12,7 +12,7 @@ View for locking and unlocking.
         xmlns:patternview="http://schemas.android.com/apk/res-auto"
         android:id="@+id/patternView"
         android:layout_width="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         patternview:circleSize="50dp"
         patternview:pathColor="@color/primary_dark_material_light"
         patternview:circleColor="@color/highlighted_text_material_light"
